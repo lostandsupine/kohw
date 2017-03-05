@@ -21,9 +21,10 @@ public class input_manager : MonoBehaviour {
 	void Update () {
 		if((Input.GetKey(KeyCode.Escape)) && !pause_down)
 		{
-			Time.timeScale = 1.0f - Time.timeScale;
-			is_paused = !is_paused;
-			pause_down = true;
+			//Time.timeScale = 1.0f - Time.timeScale;
+			//is_paused = !is_paused;
+			//pause_down = true;
+			Application.Quit();
 		}
 		move_x = 0;
 		move_y = 0;

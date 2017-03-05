@@ -20,6 +20,8 @@ obj/
 *.booproj
 *.exe
 *_Data/
+*.zip
+*_Data/
 
 # ============ #
 # OS generated #
