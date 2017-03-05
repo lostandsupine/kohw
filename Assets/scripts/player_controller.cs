@@ -13,10 +13,10 @@ public class player_controller : MonoBehaviour {
 	private Vector3 weapon_position;
 	private bool attacking = false;
 	private float attack_start_time;
-	private float attack_time_length = 0.25f;
+	private float attack_time_length = 0.2f;
 	private bool recovering = false;
 	private float recover_start_time;
-	private float recover_time_length = 0.25f;
+	private float recover_time_length = 0.2f;
 	private bool jumping = false;
 	private float jump_start_time;
 	private float jump_time_length = 0.15f;
@@ -31,10 +31,10 @@ public class player_controller : MonoBehaviour {
 	private float jump_recover_time_length = 1f;
 	private bool blocking = false;
 	private float block_start_time;
-	private float block_time_length = 0.25f;
+	private float block_time_length = 0.2f;
 	private bool block_recovering = false;
 	private float block_recover_start_time;
-	private float block_recover_time_length = 0.5f;
+	private float block_recover_time_length = 0.2f;
 
 
 	void OnCollisionEnter2D(Collision2D coll){
@@ -53,14 +53,15 @@ public class player_controller : MonoBehaviour {
 
 	public void do_block(){
 		Debug.Log ("do block");
-		if (!attacking && !recovering && !blocking && !block_recovering) {
+		if (!attacking && !recovering && !block_recovering) {
 			block_start_time = Time.time;
 			blocking = true;
 		}
+
 	}
 
 	public void do_block_recover(){
-		//Debug.Log ("do block recover");
+		Debug.Log ("do block recover");
 		if (!block_recovering && blocking) {
 			block_recover_start_time = Time.time;
 			block_recovering = true;
@@ -85,7 +86,6 @@ public class player_controller : MonoBehaviour {
 				jump_start_time = Time.time;
 			}
 			jumping = true;
-
 		}
 	}
 
@@ -221,11 +221,14 @@ public class player_controller : MonoBehaviour {
 				this.transform.GetChild (1).transform.RotateAround (this.transform.position, Vector3.forward, 90-this.transform.GetChild (1).transform.localRotation.eulerAngles.z);
 			} */
 			if (this.transform.GetChild (1).transform.localRotation.eulerAngles.z < 23f) {
-				this.transform.GetChild (1).transform.RotateAround (this.transform.GetChild (0).position , Vector3.forward, 500 * Time.deltaTime);
+				this.transform.GetChild (1).transform.RotateAround (this.transform.GetChild (0).position , Vector3.forward, 300 * Time.deltaTime);
 			} 
 			if (this.transform.GetChild (1).transform.localRotation.eulerAngles.z > 23f) {
 				this.transform.GetChild (1).transform.RotateAround (this.transform.GetChild (0).position, Vector3.forward, 23-this.transform.GetChild (1).transform.localRotation.eulerAngles.z);
 			} 
+			if ((Time.time - block_start_time) >= block_time_length) {
+				do_block_recover ();
+			}
 		}
 		if (block_recovering) {
 			Debug.Log ("block recovering");
@@ -236,7 +239,7 @@ public class player_controller : MonoBehaviour {
 				this.transform.GetChild (1).transform.RotateAround (this.transform.position, Vector3.forward, -this.transform.GetChild (1).transform.localRotation.eulerAngles.z);
 			} */
 			if (this.transform.GetChild (1).transform.localRotation.eulerAngles.z < 100f) {
-				this.transform.GetChild (1).transform.RotateAround (this.transform.GetChild (0).position, Vector3.forward, -500 * Time.deltaTime);
+				this.transform.GetChild (1).transform.RotateAround (this.transform.GetChild (0).position, Vector3.forward, -300 * Time.deltaTime);
 			}
 			if (this.transform.GetChild (1).transform.localRotation.eulerAngles.z > 180f) {
 				this.transform.GetChild (1).transform.RotateAround (this.transform.GetChild (0).position, Vector3.forward, -this.transform.GetChild (1).transform.localRotation.eulerAngles.z);
@@ -271,6 +274,7 @@ public class player_controller : MonoBehaviour {
 			}
 		}
 		if (!attacking && !recovering && !blocking && !block_recovering) {
+			//Debug.Log ("resetting");
 			this.transform.GetChild (1).transform.RotateAround (this.transform.GetChild (0).position, Vector3.forward, -this.transform.GetChild (1).transform.localRotation.eulerAngles.z);
 		}
 		set_weapon_rotation ();
