@@ -29,6 +29,13 @@ public class player_controller : MonoBehaviour {
 	private bool jump_recovering = false;
 	private float jump_recover_start_time;
 	private float jump_recover_time_length = 1f;
+	private bool blocking = false;
+	private float block_start_time;
+	private float block_time_length = 0.25f;
+	private bool block_recovering = false;
+	private float block_recover_start_time;
+	private float block_recover_time_length = 0.5f;
+
 
 	void OnCollisionEnter2D(Collision2D coll){
 		if (coll.gameObject.tag == "enemy"){
@@ -38,18 +45,35 @@ public class player_controller : MonoBehaviour {
 
 	public void do_attack(){
 		Debug.Log ("do attack");
-		if (!attacking && !recovering) {
+		if (!attacking && !recovering && !blocking && !block_recovering) {
 			attack_start_time = Time.time;
+			attacking = true;
 		}
-		attacking = true;
+	}
+
+	public void do_block(){
+		Debug.Log ("do block");
+		if (!attacking && !recovering && !blocking && !block_recovering) {
+			block_start_time = Time.time;
+			blocking = true;
+		}
+	}
+
+	public void do_block_recover(){
+		//Debug.Log ("do block recover");
+		if (!block_recovering && blocking) {
+			block_recover_start_time = Time.time;
+			block_recovering = true;
+			blocking = false;
+		}
 	}
 
 	public void do_recover(){
 		Debug.Log ("do recover");
 		if (!recovering && !attacking) {
 			recover_start_time = Time.time;
+			recovering = true;
 		}
-		recovering = true;
 	}
 
 	public void do_jump(int dirx, int diry){
@@ -73,13 +97,22 @@ public class player_controller : MonoBehaviour {
 	}
 
 	private void set_weapon_rotation(){
-		mouse_position = (Input.mousePosition - Camera.main.WorldToScreenPoint (this.transform.position)) * 100000f;
-		weapon_position = Camera.main.WorldToScreenPoint (this.transform.GetChild(1).transform.GetChild(0).transform.position);
-		angle = Mathf.Atan2 (mouse_position.y - weapon_position.y, mouse_position.x - weapon_position.x) * Mathf.Rad2Deg;
-		//this.transform.GetChild(1).transform.GetChild(0).transform.rotation = Quaternion.Euler (new Vector3 (0, 0, angle-90));
-		this.transform.GetChild(1).transform.GetChild(0).transform.RotateAround(this.transform.GetChild(1).transform.position,
-			Vector3.forward,
-			angle-this.transform.GetChild(1).transform.GetChild(0).transform.rotation.eulerAngles.z-90f);
+		if (!blocking) {
+			mouse_position = (Input.mousePosition - Camera.main.WorldToScreenPoint (this.transform.position)) * 100000f;
+			weapon_position = Camera.main.WorldToScreenPoint (this.transform.GetChild (1).transform.GetChild (0).transform.position);
+			angle = Mathf.Atan2 (mouse_position.y - weapon_position.y, mouse_position.x - weapon_position.x) * Mathf.Rad2Deg;
+			//this.transform.GetChild(1).transform.GetChild(0).transform.rotation = Quaternion.Euler (new Vector3 (0, 0, angle-90));
+			this.transform.GetChild (1).transform.GetChild (0).transform.RotateAround (this.transform.GetChild (1).transform.position,
+				Vector3.forward,
+				angle - this.transform.GetChild (1).transform.GetChild (0).transform.rotation.eulerAngles.z - 90f);
+		} else {
+			weapon_position = Camera.main.WorldToScreenPoint (this.transform.GetChild (1).transform.GetChild (0).transform.position);
+			angle = Mathf.Atan2 (player_position.y - weapon_position.y, player_position.x - weapon_position.x) * Mathf.Rad2Deg;
+			//this.transform.GetChild(1).transform.GetChild(0).transform.rotation = Quaternion.Euler (new Vector3 (0, 0, angle-90));
+			this.transform.GetChild (1).transform.GetChild (0).transform.RotateAround (this.transform.GetChild (1).transform.position,
+				Vector3.forward,
+				angle - this.transform.GetChild (1).transform.GetChild (0).transform.rotation.eulerAngles.z + 187f);
+		}
 	}
 
 	private void set_rotation(){
@@ -179,7 +212,41 @@ public class player_controller : MonoBehaviour {
 
 		//this.transform.GetChild (1).transform.localEulerAngles = arm_rotation + new Vector3 (0, 0, 1);
 		//arm_rotation = this.transform.GetChild (1).transform.localEulerAngles;
+		if (blocking) {
+			Debug.Log ("blocking");
+			/*if (this.transform.GetChild (1).transform.localRotation.eulerAngles.z < 90f) {
+				this.transform.GetChild (1).transform.RotateAround (this.transform.position , Vector3.forward, 500 * Time.deltaTime);
+			} 
+			if (this.transform.GetChild (1).transform.localRotation.eulerAngles.z > 90f) {
+				this.transform.GetChild (1).transform.RotateAround (this.transform.position, Vector3.forward, 90-this.transform.GetChild (1).transform.localRotation.eulerAngles.z);
+			} */
+			if (this.transform.GetChild (1).transform.localRotation.eulerAngles.z < 23f) {
+				this.transform.GetChild (1).transform.RotateAround (this.transform.GetChild (0).position , Vector3.forward, 500 * Time.deltaTime);
+			} 
+			if (this.transform.GetChild (1).transform.localRotation.eulerAngles.z > 23f) {
+				this.transform.GetChild (1).transform.RotateAround (this.transform.GetChild (0).position, Vector3.forward, 23-this.transform.GetChild (1).transform.localRotation.eulerAngles.z);
+			} 
+		}
+		if (block_recovering) {
+			Debug.Log ("block recovering");
+			/*if (this.transform.GetChild (1).transform.localRotation.eulerAngles.z < 100f) {
+				this.transform.GetChild (1).transform.RotateAround (this.transform.position, Vector3.forward, -500 * Time.deltaTime);
+			}
+			if (this.transform.GetChild (1).transform.localRotation.eulerAngles.z > 180f) {
+				this.transform.GetChild (1).transform.RotateAround (this.transform.position, Vector3.forward, -this.transform.GetChild (1).transform.localRotation.eulerAngles.z);
+			} */
+			if (this.transform.GetChild (1).transform.localRotation.eulerAngles.z < 100f) {
+				this.transform.GetChild (1).transform.RotateAround (this.transform.GetChild (0).position, Vector3.forward, -500 * Time.deltaTime);
+			}
+			if (this.transform.GetChild (1).transform.localRotation.eulerAngles.z > 180f) {
+				this.transform.GetChild (1).transform.RotateAround (this.transform.GetChild (0).position, Vector3.forward, -this.transform.GetChild (1).transform.localRotation.eulerAngles.z);
+			} 
+			if ((Time.time - block_recover_start_time) >= block_recover_time_length) {
+				block_recovering = false;
+			}
+		}
 		if (attacking) {
+			Debug.Log ("attacking");
 			if (this.transform.GetChild (1).transform.localRotation.eulerAngles.z < 60f) {
 				this.transform.GetChild (1).transform.RotateAround (this.transform.GetChild (0).position , Vector3.forward, 500 * Time.deltaTime);
 			} 
@@ -192,6 +259,7 @@ public class player_controller : MonoBehaviour {
 			}
 		}
 		if (recovering) {
+			Debug.Log ("attack recovering");
 			if (this.transform.GetChild (1).transform.localRotation.eulerAngles.z < 100f) {
 				this.transform.GetChild (1).transform.RotateAround (this.transform.GetChild (0).position, Vector3.forward, -500 * Time.deltaTime);
 			}
@@ -202,7 +270,7 @@ public class player_controller : MonoBehaviour {
 				recovering = false;
 			}
 		}
-		if (!attacking && !recovering) {
+		if (!attacking && !recovering && !blocking && !block_recovering) {
 			this.transform.GetChild (1).transform.RotateAround (this.transform.GetChild (0).position, Vector3.forward, -this.transform.GetChild (1).transform.localRotation.eulerAngles.z);
 		}
 		set_weapon_rotation ();

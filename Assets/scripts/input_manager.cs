@@ -72,8 +72,12 @@ public class input_manager : MonoBehaviour {
 			}
 				
 			if (Input.GetMouseButtonDown (0)) {
-				Debug.Log ("mouse button down");
 				GameObject.Find ("player").GetComponent<player_controller> ().do_attack ();
+			}
+			if (Input.GetMouseButton (1)) {
+				GameObject.Find ("player").GetComponent<player_controller> ().do_block ();
+			} else {
+				GameObject.Find ("player").GetComponent<player_controller> ().do_block_recover ();
 			}
 
 			current_direction = new Vector2 (move_x, move_y);
