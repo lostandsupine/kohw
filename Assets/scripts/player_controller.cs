@@ -42,10 +42,12 @@ public class player_controller : MonoBehaviour {
 	}
 
 	private void set_weapon_rotation(){
-		mouse_position = Input.mousePosition;
+		mouse_position = (Input.mousePosition - Camera.main.WorldToScreenPoint (this.transform.position)) * 100000f;
 		weapon_position = Camera.main.WorldToScreenPoint (this.transform.GetChild(1).transform.GetChild(0).transform.position);
 		angle = Mathf.Atan2 (mouse_position.y - weapon_position.y, mouse_position.x - weapon_position.x) * Mathf.Rad2Deg;
-		this.transform.GetChild(1).transform.GetChild(0).transform.rotation = Quaternion.Euler (new Vector3 (0, 0, angle-90));
+		//this.transform.GetChild(1).transform.GetChild(0).transform.rotation = Quaternion.Euler (new Vector3 (0, 0, angle-90));
+		this.transform.GetChild(1).transform.GetChild(0).transform.RotateAround(this.transform.GetChild(1).transform.position,Vector3.forward,
+			angle-this.transform.GetChild(1).transform.GetChild(0).transform.rotation.eulerAngles.z-90f);
 	}
 
 	private void set_rotation(){
@@ -105,7 +107,7 @@ public class player_controller : MonoBehaviour {
 			GetComponent<SpriteRenderer> ().sprite = sprite_list [current_frame];
 		}*/
 		set_rotation ();
-		//set_weapon_rotation ();
+
 		//this.transform.GetChild (1).transform.localEulerAngles = arm_rotation + new Vector3 (0, 0, 1);
 		//arm_rotation = this.transform.GetChild (1).transform.localEulerAngles;
 		if (attacking) {
@@ -134,5 +136,6 @@ public class player_controller : MonoBehaviour {
 		if (!attacking && !recovering) {
 			this.transform.GetChild (1).transform.RotateAround (this.transform.position, Vector3.forward, -this.transform.GetChild (1).transform.localRotation.eulerAngles.z);
 		}
+		set_weapon_rotation ();
 	}
 }
