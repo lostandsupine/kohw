@@ -35,6 +35,10 @@ public class player_controller : MonoBehaviour {
 	private bool block_recovering = false;
 	private float block_recover_start_time;
 	private float block_recover_time_length = 0.2f;
+	private bool shielding = false;
+	private bool shield_ready = true;
+	private float shield_start_time;
+	private float shield_time_length = 0.12f;
 
 
 	void OnCollisionEnter2D(Collision2D coll){
@@ -214,6 +218,7 @@ public class player_controller : MonoBehaviour {
 		//arm_rotation = this.transform.GetChild (1).transform.localEulerAngles;
 		if (blocking) {
 			Debug.Log ("blocking");
+
 			/*if (this.transform.GetChild (1).transform.localRotation.eulerAngles.z < 90f) {
 				this.transform.GetChild (1).transform.RotateAround (this.transform.position , Vector3.forward, 500 * Time.deltaTime);
 			} 
@@ -224,6 +229,11 @@ public class player_controller : MonoBehaviour {
 				this.transform.GetChild (1).transform.RotateAround (this.transform.GetChild (0).position , Vector3.forward, 300 * Time.deltaTime);
 			} 
 			if (this.transform.GetChild (1).transform.localRotation.eulerAngles.z > 23f) {
+				if (shield_ready) {
+					shielding = true;
+					shield_start_time = Time.time;
+					shield_ready = false;
+				}
 				this.transform.GetChild (1).transform.RotateAround (this.transform.GetChild (0).position, Vector3.forward, 23-this.transform.GetChild (1).transform.localRotation.eulerAngles.z);
 			} 
 			if ((Time.time - block_start_time) >= block_time_length) {
@@ -232,6 +242,7 @@ public class player_controller : MonoBehaviour {
 		}
 		if (block_recovering) {
 			Debug.Log ("block recovering");
+			this.transform.GetChild (1).transform.GetChild (0).transform.GetChild (1).GetComponent<SpriteRenderer> ().enabled = false;
 			/*if (this.transform.GetChild (1).transform.localRotation.eulerAngles.z < 100f) {
 				this.transform.GetChild (1).transform.RotateAround (this.transform.position, Vector3.forward, -500 * Time.deltaTime);
 			}
@@ -246,10 +257,19 @@ public class player_controller : MonoBehaviour {
 			} 
 			if ((Time.time - block_recover_start_time) >= block_recover_time_length) {
 				block_recovering = false;
+				shield_ready = true;
+			}
+		}
+		if (shielding) {
+			this.transform.GetChild (1).transform.GetChild (0).transform.GetChild (1).GetComponent<SpriteRenderer> ().enabled = true;
+			if ((Time.time - shield_start_time) >= shield_time_length) {
+				this.transform.GetChild (1).transform.GetChild (0).transform.GetChild (1).GetComponent<SpriteRenderer> ().enabled = false;
+				shielding = false;
 			}
 		}
 		if (attacking) {
 			Debug.Log ("attacking");
+			this.transform.GetChild (1).transform.GetChild (0).transform.GetChild (0).GetComponent<SpriteRenderer> ().enabled = true;
 			if (this.transform.GetChild (1).transform.localRotation.eulerAngles.z < 60f) {
 				this.transform.GetChild (1).transform.RotateAround (this.transform.GetChild (0).position , Vector3.forward, 500 * Time.deltaTime);
 			} 
@@ -263,6 +283,7 @@ public class player_controller : MonoBehaviour {
 		}
 		if (recovering) {
 			Debug.Log ("attack recovering");
+			this.transform.GetChild (1).transform.GetChild (0).transform.GetChild (0).GetComponent<SpriteRenderer> ().enabled = false;
 			if (this.transform.GetChild (1).transform.localRotation.eulerAngles.z < 100f) {
 				this.transform.GetChild (1).transform.RotateAround (this.transform.GetChild (0).position, Vector3.forward, -500 * Time.deltaTime);
 			}
