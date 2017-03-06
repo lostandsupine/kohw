@@ -38,7 +38,7 @@ public class player_controller : MonoBehaviour {
 	private bool shielding = false;
 	private bool shield_ready = true;
 	private float shield_start_time;
-	private float shield_time_length = 0.12f;
+	private float shield_time_length = 0.15f;
 
 
 	void OnCollisionEnter2D(Collision2D coll){
@@ -200,7 +200,7 @@ public class player_controller : MonoBehaviour {
 			}
 		}
 		if (!jumping && moving) {
-			Debug.Log ("moving");
+			//Debug.Log ("moving");
 			if (move_x != 0 && move_y == 0) {
 				GameObject.Find ("player").GetComponent<player_controller> ().move_player (2 + move_x, velocity);
 			} else if (move_x == 0 && move_y != 0) {
